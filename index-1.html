@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>🌸 Lovey Match</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffb3cf">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #fff6fb;
+    --card: #ffffff;
+    --pink: #ff8fb1;
+    --pink-deep: #ff6f9e;
+    --sky: #a9e0ff;
+    --sky-deep: #6fbdf2;
+    --lavender: #c9b6ff;
+    --mint: #9fe8d8;
+    --cream: #ffd79e;
+    --ink: #3f4a5c;
+    --ink-soft: #7f8ba0;
+    --shadow: 0 20px 45px rgba(140, 190, 230, 0.28);
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body{
+    margin:0; padding:0; height:100%;
+    background: linear-gradient(160deg, #ffeef5 0%, #fff2f8 32%, #eef7ff 62%, #dcefff 100%);
+    font-family: 'Nunito', sans-serif;
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  .phone{
+    position: relative; z-index: 2;
+    width: 390px; max-width: 100vw; height: 100vh; max-height: 844px;
+    margin: 0 auto;
+    background: transparent;
+    display: flex; flex-direction: column;
+  }
+
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 20px 10px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:8px;
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size: 21px;
+    color: var(--pink-deep);
+  }
+  .brand .dot{
+    width:10px; height:10px; border-radius:50%;
+    background: linear-gradient(135deg, var(--pink), var(--sky));
+  }
+  .icon-btn{
+    width:38px; height:38px; border-radius: 50%;
+    background: rgba(255,255,255,.7);
+    border: 1px solid rgba(255,180,205,.4);
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; color: var(--pink-deep);
+    backdrop-filter: blur(6px);
+    overflow:hidden;
+  }
+  .icon-btn img{ width:100%; height:100%; object-fit:cover; }
+  .header-icons{ display:flex; align-items:center; gap:10px; }
+
+  .stack-wrap{
+    position:relative; flex:1; margin: 6px 20px 10px;
+  }
+  .card{
+    position:absolute; inset:0;
+    border-radius: 32px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    display:flex; flex-direction:column;
+    transform-origin: bottom center;
+    touch-action: none;
+    will-change: transform;
+    transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  .card .photo{
+    flex:1; position:relative; background-size: cover; background-position: center;
+  }
+  .card .photo::after{
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(to top, rgba(30,10,25,.65) 0%, rgba(30,10,25,0) 42%);
+  }
+  .ribbon{
+    position:absolute; top:14px; left:14px; z-index:2;
+    background: rgba(255,255,255,.85);
+    color: var(--pink-deep); font-weight:800; font-size:12px;
+    padding: 5px 12px; border-radius: 999px;
+    font-family:'Baloo 2', sans-serif;
+    box-shadow: 0 4px 10px rgba(255,140,180,.25);
+  }
+  .stamp{
+    position:absolute; top: 26px; z-index:3;
+    font-family:'Baloo 2', sans-serif; font-weight:800; font-size: 34px;
+    padding: 6px 18px; border-radius: 14px; border: 4px solid;
+    transform: rotate(-18deg); opacity:0; letter-spacing: 2px;
+  }
+  .stamp.like{ left: 24px; color:#ff5b8e; border-color:#ff5b8e; }
+  .stamp.nope{ right: 24px; color: var(--sky-deep); border-color: var(--sky-deep); transform: rotate(18deg); }
+
+  .info{
+    position:absolute; left:20px; right:20px; bottom:16px; z-index:2; color:#fff;
+  }
+  .info .name-row{
+    display:flex; align-items:baseline; gap:8px;
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size: 26px;
+  }
+  .info .age{ font-weight:600; font-size:19px; opacity:.9; }
+  .info .sub{ margin-top:4px; font-weight:700; font-size:14px; opacity:.95; }
+  .info .quote{
+    margin-top:8px; font-style: italic; font-weight:600; font-size:13.5px;
+    background: rgba(255,255,255,.18);
+    backdrop-filter: blur(4px);
+    padding: 8px 12px; border-radius: 14px;
+    display:inline-block;
+  }
+
+  .actions{
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    padding: 10px 20px 26px;
+  }
+  .actions button{
+    border:none; cursor:pointer; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(255,255,255,.75);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 22px rgba(255,150,190,.28);
+    transition: transform .15s ease;
+    color: var(--pink-deep);
+  }
+  .actions button:active{ transform: scale(.88); }
+  .btn-rewind{ width:46px; height:46px; font-size:18px; color:#c9b6ff; }
+  .btn-nope{ width:56px; height:56px; font-size:22px; color: var(--sky-deep); }
+  .btn-star{ width:46px; height:46px; font-size:18px; color:#ffbf5e; }
+  .btn-like{ width:64px; height:64px; font-size:26px;
+    background: linear-gradient(135deg, #ff9ec7, var(--sky));
+    color:#fff;
+    box-shadow: 0 12px 26px rgba(160,190,230,.5);
+  }
+  .btn-boost{ width:46px; height:46px; font-size:18px; color:#7fd9c4; }
+
+  .empty{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; gap:10px;
+    color: var(--ink-soft); padding: 30px;
+  }
+  .empty .big{ font-size: 46px; }
+  .empty h3{ font-family:'Baloo 2',sans-serif; color:var(--pink-deep); margin:0; }
+  .reset-btn{
+    margin-top:6px; border:none; padding:10px 22px; border-radius:999px;
+    background: linear-gradient(135deg, var(--pink), var(--sky-deep)); color:#fff;
+    font-weight:700; font-family:'Baloo 2',sans-serif; cursor:pointer;
+    box-shadow: var(--shadow);
+  }
+
+  /* heart burst */
+  .burst{ position:absolute; inset:0; pointer-events:none; z-index:5; overflow:visible; }
+  .burst span{
+    position:absolute; left:50%; top:50%; font-size: 22px;
+    animation: pop .9s ease-out forwards;
+  }
+  @keyframes pop{
+    0%{ transform: translate(-50%,-50%) scale(.3); opacity:1; }
+    100%{ transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1.1); opacity:0; }
+  }
+
+  /* match modal */
+  .overlay{
+    position: fixed; inset:0; z-index: 20;
+    background: rgba(45,45,80,.5);
+    backdrop-filter: blur(3px);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition: opacity .3s ease;
+  }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+  .match-card{
+    width: 320px; background: linear-gradient(160deg,#fff 0%, #fff0f7 55%, #eaf6ff 100%);
+    border-radius: 28px; padding: 30px 26px; text-align:center;
+    box-shadow: 0 30px 60px rgba(0,0,0,.35);
+    transform: scale(.8); transition: transform .35s cubic-bezier(.2,1.4,.4,1);
+  }
+  .overlay.show .match-card{ transform: scale(1); }
+  .match-card .emoji{ font-size:44px; }
+  .match-card h2{
+    font-family:'Baloo 2', sans-serif; color: var(--pink-deep);
+    margin: 6px 0 2px; font-size: 26px;
+  }
+  .match-card p{ color: var(--ink-soft); font-weight:600; margin: 0 0 18px; font-size: 14px; }
+  .match-avatars{ display:flex; justify-content:center; gap: -10px; margin-bottom: 16px; }
+  .match-avatars img{
+    width:74px; height:74px; border-radius:50%; object-fit:cover;
+    border: 4px solid #fff; box-shadow: 0 6px 14px rgba(0,0,0,.15);
+    margin: 0 -10px;
+  }
+  .continue-btn{
+    border:none; width:100%; padding:13px; border-radius:999px;
+    background: linear-gradient(135deg, var(--pink-deep), var(--sky-deep));
+    color:#fff; font-weight:800; font-family:'Baloo 2',sans-serif; font-size:15px;
+    cursor:pointer; box-shadow: 0 12px 24px rgba(140,190,230,.4);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card{ transition: none; }
+  }
+
+  /* 프로필 등록 모달 — 기존 팔레트 그대로 사용 */
+  .form-card{
+    width: 320px; max-height: 86vh; overflow-y: auto;
+    background: linear-gradient(160deg,#fff 0%, #fff0f7 55%, #eaf6ff 100%);
+    border-radius: 28px; padding: 26px 24px; text-align:left;
+    box-shadow: 0 30px 60px rgba(0,0,0,.35);
+    transform: scale(.9); transition: transform .3s cubic-bezier(.2,1.4,.4,1);
+  }
+  .overlay.show .form-card{ transform: scale(1); }
+  .form-card h2{
+    font-family:'Baloo 2', sans-serif; color: var(--pink-deep);
+    margin: 0 0 4px; font-size: 22px; text-align:center;
+  }
+  .form-card .form-sub{
+    text-align:center; color: var(--ink-soft); font-weight:600; font-size:13px; margin-bottom:18px;
+  }
+  .photo-picker{
+    display:flex; align-items:center; gap:14px; margin-bottom:16px;
+  }
+  .photo-preview{
+    width:70px; height:70px; border-radius:20px; flex-shrink:0;
+    background: linear-gradient(135deg, var(--pink), var(--sky)) center/cover no-repeat;
+    background-color:#fce8f2;
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px; color:#fff; overflow:hidden;
+  }
+  .photo-preview.has-img{ background-image: none; }
+  .photo-preview img{ width:100%; height:100%; object-fit:cover; }
+  .file-btn{
+    border:none; padding:9px 16px; border-radius:999px; cursor:pointer;
+    background: rgba(255,255,255,.85); color: var(--pink-deep); font-weight:700;
+    font-family:'Baloo 2',sans-serif; font-size:13px;
+    box-shadow: 0 6px 14px rgba(140,190,230,.25);
+  }
+  .form-field{ margin-bottom: 12px; }
+  .form-field label{
+    display:block; font-size:12px; font-weight:700; color: var(--ink-soft); margin-bottom:5px;
+  }
+  .form-field input{
+    width:100%; border:1px solid rgba(160,190,230,.4); border-radius:14px;
+    padding:10px 12px; font-family:'Nunito',sans-serif; font-size:14px; color: var(--ink);
+    background: rgba(255,255,255,.8); outline:none;
+  }
+  .form-field input:focus{ border-color: var(--pink); }
+  .form-actions{ display:flex; gap:10px; margin-top:6px; }
+  .form-actions button{
+    flex:1; border:none; padding:12px; border-radius:999px; cursor:pointer;
+    font-weight:800; font-family:'Baloo 2',sans-serif; font-size:14px;
+  }
+  .cancel-btn{ background: rgba(160,190,230,.18); color: var(--ink-soft); }
+  .save-btn{
+    background: linear-gradient(135deg, var(--pink-deep), var(--sky-deep)); color:#fff;
+    box-shadow: 0 12px 24px rgba(140,190,230,.4);
+  }
+  .delete-btn{
+    width:100%; margin-top:10px; border:none; padding:11px; border-radius:999px;
+    background: rgba(255,90,120,.12); color:#e0507a; font-weight:700;
+    font-family:'Baloo 2',sans-serif; font-size:13px; cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <header>
+    <div class="brand"><span class="dot" id="brandDot"></span>Lovey Match</div>
+    <div class="header-icons">
+      <div class="icon-btn" id="btnMyProfile" title="내 프로필">👤</div>
+      <div class="icon-btn" id="btnAddProfile" title="새 카드 등록">⚙</div>
+    </div>
+  </header>
+
+  <div class="stack-wrap" id="stackWrap"></div>
+
+  <div class="actions">
+    <button class="btn-rewind" id="btnRewind" title="되돌리기">↺</button>
+    <button class="btn-nope" id="btnNope" title="패스">✕</button>
+    <button class="btn-star" id="btnStar" title="슈퍼라이크">★</button>
+    <button class="btn-like" id="btnLike" title="좋아요">♥</button>
+    <button class="btn-boost" id="btnBoost" title="부스트">⚡</button>
+  </div>
+</div>
+
+<div class="overlay" id="matchOverlay">
+  <div class="match-card">
+    <div class="emoji">💕</div>
+    <h2>It's a Match!</h2>
+    <p id="matchText">서로 마음에 들었어요</p>
+    <div class="match-avatars">
+      <img id="myAvatar" src="" alt="">
+      <img id="matchAvatar" src="" alt="">
+    </div>
+    <button class="continue-btn" id="continueBtn">계속하기 ✨</button>
+  </div>
+</div>
+
+<div class="overlay" id="myProfileOverlay">
+  <div class="form-card">
+    <h2>내 프로필 👤</h2>
+    <div class="form-sub">매칭 화면에 표시될 내 정보예요</div>
+
+    <div class="photo-picker">
+      <div class="photo-preview" id="mpPhotoPreview">📷</div>
+      <button class="file-btn" id="mpPickPhotoBtn" type="button">사진 선택</button>
+      <input type="file" id="mpPhotoInput" accept="image/*" style="display:none">
+    </div>
+
+    <div class="form-field">
+      <label>이름</label>
+      <input type="text" id="mpName" placeholder="예: 지민">
+    </div>
+    <div class="form-field">
+      <label>나이</label>
+      <input type="number" id="mpAge" placeholder="예: 26">
+    </div>
+    <div class="form-field">
+      <label>한마디 소개</label>
+      <input type="text" id="mpBio" placeholder="예: Seoul · Cat lover 🐱">
+    </div>
+
+    <div class="form-actions">
+      <button class="cancel-btn" id="mpCancelBtn" type="button">취소</button>
+      <button class="save-btn" id="mpSaveBtn" type="button">저장하기 💾</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="addOverlay">
+  <div class="form-card">
+    <h2 id="formTitle">새 카드 등록 🎀</h2>
+    <div class="form-sub" id="formSub">사진과 소개를 넣으면 스와이프 카드로 추가돼요</div>
+
+    <div class="photo-picker">
+      <div class="photo-preview" id="photoPreview">📷</div>
+      <button class="file-btn" id="pickPhotoBtn" type="button">사진 선택</button>
+      <input type="file" id="photoInput" accept="image/*" style="display:none">
+    </div>
+
+    <div class="form-field">
+      <label>이름</label>
+      <input type="text" id="fName" placeholder="예: 하루">
+    </div>
+    <div class="form-field">
+      <label>나이</label>
+      <input type="number" id="fAge" placeholder="예: 27">
+    </div>
+    <div class="form-field">
+      <label>한마디 소개</label>
+      <input type="text" id="fSub" placeholder="예: Seoul · Designer 🎨">
+    </div>
+    <div class="form-field">
+      <label>인삿말 / 문구</label>
+      <input type="text" id="fQuote" placeholder="예: 같이 산책하실래요?">
+    </div>
+
+    <div class="form-actions">
+      <button class="cancel-btn" id="cancelAddBtn" type="button">취소</button>
+      <button class="save-btn" id="saveAddBtn" type="button">카드에 추가 ✨</button>
+    </div>
+    <button class="delete-btn" id="deleteAddBtn" type="button" style="display:none">이 카드 삭제 🗑</button>
+  </div>
+</div>
+
+<script>
+/* ---------------------------------------------
+   프로필 데이터 — 이 폰의 브라우저(localStorage)에 저장됩니다.
+   최초 실행 시에는 예시 프로필 4개가 기본으로 들어있어요.
+---------------------------------------------- */
+const STORAGE_KEY = 'loveyMatchProfiles';
+
+const defaultProfiles = [
+  { name: "나비",   age: 2, sub: "우리집 · 코숏 🐾", quote: "츄르 주실래요?", image: "https://cataas.com/cat?width=600&height=800&pf=1" },
+  { name: "두부",   age: 1, sub: "우리집 · 러시안블루 🐾", quote: "같이 낮잠 잘래요?", image: "https://cataas.com/cat?width=600&height=800&pf=2" },
+  { name: "몽이",   age: 3, sub: "우리집 · 삼색이 🐾", quote: "장난감 좋아해요!", image: "https://cataas.com/cat?width=600&height=800&pf=3" },
+  { name: "코코",   age: 2, sub: "우리집 · 페르시안 🐾", quote: "쓰다듬어 주세요 🐈", image: "https://cataas.com/cat?width=600&height=800&pf=4" },
+];
+
+function loadProfiles(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed) && parsed.length) return parsed;
+    }
+  }catch(e){ console.warn('저장된 프로필을 불러오지 못했어요', e); }
+  return defaultProfiles.slice();
+}
+
+function saveProfiles(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles)); }
+  catch(e){ console.warn('프로필 저장에 실패했어요 (용량 초과일 수 있어요)', e); }
+}
+
+const profiles = loadProfiles();
+
+/* ---------------------------------------------
+   내 프로필 (매칭 상대가 아니라 '나' 자신의 정보)
+---------------------------------------------- */
+const ME_KEY = 'loveyMatchMyProfile';
+const DEFAULT_AVATAR = 'icons/avatar-placeholder.png';
+
+function loadMyProfile(){
+  try{
+    const raw = localStorage.getItem(ME_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){ console.warn('내 프로필을 불러오지 못했어요', e); }
+  return { name: '', age: '', bio: '', image: '' };
+}
+
+function saveMyProfileToStorage(){
+  try{ localStorage.setItem(ME_KEY, JSON.stringify(myProfile)); }
+  catch(e){ console.warn('내 프로필 저장 실패', e); }
+}
+
+let myProfile = loadMyProfile();
+
+function refreshBrandAvatar(){
+  const dot = document.getElementById('brandDot');
+  if(myProfile.image){
+    dot.style.background = `url('${myProfile.image}') center/cover no-repeat`;
+  } else {
+    dot.style.background = 'linear-gradient(135deg, var(--pink), var(--sky))';
+  }
+}
+
+let index = 0;
+let history = [];
+const stackWrap = document.getElementById('stackWrap');
+
+function renderStack(){
+  stackWrap.querySelectorAll('.card, .empty').forEach(el => el.remove());
+  const visible = profiles.slice(index, index + 3);
+  if(visible.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.innerHTML = `<div class="big">☁️💗</div><h3>오늘의 카드를 모두 봤어요</h3>
+      <div>내일 새로운 인연이 찾아올 거예요</div>
+      <button class="reset-btn" id="resetBtn">다시 보기</button>`;
+    stackWrap.appendChild(empty);
+    document.getElementById('resetBtn').onclick = () => { index = 0; history = []; renderStack(); };
+    return;
+  }
+  visible.slice().reverse().forEach((p, i) => {
+    const depth = visible.length - 1 - i;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.zIndex = 10 - depth;
+    card.style.transform = `translateY(${depth * 10}px) scale(${1 - depth * 0.04})`;
+    card.style.opacity = depth === 2 ? 0.6 : 1;
+    card.innerHTML = `
+      <div class="photo" style="background-image:url('${p.image}')">
+        <div class="ribbon" data-edit="${index + depth}">✎ 편집</div>
+        <div class="stamp like">LIKE</div>
+        <div class="stamp nope">NOPE</div>
+        <div class="info">
+          <div class="name-row"><span>${p.name}</span><span class="age">${p.age}</span></div>
+          <div class="sub">${p.sub}</div>
+          <div class="quote">“${p.quote}”</div>
+        </div>
+      </div>
+      <div class="burst"></div>
+    `;
+    if(depth === 0){
+      makeDraggable(card, p);
+      card.querySelector('.ribbon').onclick = (e) => {
+        e.stopPropagation();
+        openEditModal(index + depth);
+      };
+    }
+    stackWrap.appendChild(card);
+  });
+}
+
+function makeDraggable(card, profile){
+  let startX = 0, startY = 0, dx = 0, dy = 0, dragging = false;
+  const likeStamp = card.querySelector('.stamp.like');
+  const nopeStamp = card.querySelector('.stamp.nope');
+
+  card.addEventListener('pointerdown', e => {
+    if(e.target.closest('.ribbon')) return;
+    dragging = true;
+    startX = e.clientX; startY = e.clientY;
+    card.setPointerCapture(e.pointerId);
+    card.style.transition = 'none';
+  });
+  card.addEventListener('pointermove', e => {
+    if(!dragging) return;
+    dx = e.clientX - startX; dy = e.clientY - startY;
+    const rot = dx / 14;
+    card.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
+    const ratio = Math.min(Math.abs(dx) / 120, 1);
+    likeStamp.style.opacity = dx > 20 ? ratio : 0;
+    nopeStamp.style.opacity = dx < -20 ? ratio : 0;
+  });
+  card.addEventListener('pointerup', () => {
+    dragging = false;
+    card.style.transition = '';
+    if(dx > 110) swipeOut(card, 1, profile);
+    else if(dx < -110) swipeOut(card, -1, profile);
+    else { card.style.transform = ''; likeStamp.style.opacity = 0; nopeStamp.style.opacity = 0; }
+    dx = 0; dy = 0;
+  });
+}
+
+function swipeOut(card, dir, profile){
+  card.style.transform = `translate(${dir * 500}px, -40px) rotate(${dir * 30}deg)`;
+  card.style.opacity = '0';
+  history.push(index);
+  index++;
+  if(dir > 0) triggerMatch(profile);
+  setTimeout(renderStack, 260);
+}
+
+function heartBurst(){
+  const burst = document.querySelector('.card .burst');
+  if(!burst) return;
+  for(let i=0;i<10;i++){
+    const s = document.createElement('span');
+    s.textContent = ['💗','💕','✨','🩵'][Math.floor(Math.random()*4)];
+    const angle = Math.random()*Math.PI*2;
+    const dist = 60 + Math.random()*70;
+    s.style.setProperty('--x', Math.cos(angle)*dist + 'px');
+    s.style.setProperty('--y', Math.sin(angle)*dist + 'px');
+    burst.appendChild(s);
+    setTimeout(() => s.remove(), 900);
+  }
+}
+
+function triggerMatch(profile){
+  heartBurst();
+  setTimeout(() => {
+    document.getElementById('matchText').textContent = `${profile.name}님과 서로 마음에 들었어요`;
+    document.getElementById('matchAvatar').src = profile.image;
+    document.getElementById('myAvatar').src = myProfile.image || DEFAULT_AVATAR;
+    document.getElementById('matchOverlay').classList.add('show');
+  }, 200);
+}
+
+document.getElementById('continueBtn').onclick = () => {
+  document.getElementById('matchOverlay').classList.remove('show');
+};
+
+document.getElementById('btnLike').onclick = () => {
+  const card = stackWrap.querySelector('.card');
+  if(card) swipeOut(card, 1, profiles[index]);
+};
+document.getElementById('btnNope').onclick = () => {
+  const card = stackWrap.querySelector('.card');
+  if(card) swipeOut(card, -1, profiles[index]);
+};
+document.getElementById('btnRewind').onclick = () => {
+  if(history.length){ index = history.pop(); renderStack(); }
+};
+document.getElementById('btnStar').onclick = () => {
+  const card = stackWrap.querySelector('.card');
+  if(card) swipeOut(card, 1, profiles[index]); // 슈퍼라이크도 매칭으로 처리
+};
+document.getElementById('btnBoost').onclick = () => {
+  const btn = document.getElementById('btnBoost');
+  btn.style.transform = 'scale(1.3) rotate(20deg)';
+  setTimeout(() => btn.style.transform = '', 250);
+};
+
+renderStack();
+refreshBrandAvatar();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(() => {});
+  });
+}
+
+/* ---------------------------------------------
+   👤 내 프로필 설정
+---------------------------------------------- */
+const myProfileOverlay = document.getElementById('myProfileOverlay');
+const mpPhotoInput = document.getElementById('mpPhotoInput');
+const mpPhotoPreview = document.getElementById('mpPhotoPreview');
+let mpPendingImage = null;
+
+document.getElementById('btnMyProfile').onclick = () => {
+  mpPendingImage = myProfile.image || null;
+  if(mpPendingImage){
+    mpPhotoPreview.classList.add('has-img');
+    mpPhotoPreview.innerHTML = `<img src="${mpPendingImage}" alt="">`;
+  } else {
+    mpPhotoPreview.classList.remove('has-img');
+    mpPhotoPreview.innerHTML = '📷';
+  }
+  document.getElementById('mpName').value = myProfile.name || '';
+  document.getElementById('mpAge').value = myProfile.age || '';
+  document.getElementById('mpBio').value = myProfile.bio || '';
+  myProfileOverlay.classList.add('show');
+};
+
+document.getElementById('mpCancelBtn').onclick = () => {
+  myProfileOverlay.classList.remove('show');
+};
+
+document.getElementById('mpPickPhotoBtn').onclick = () => mpPhotoInput.click();
+
+mpPhotoInput.addEventListener('change', () => {
+  const file = mpPhotoInput.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    mpPendingImage = e.target.result;
+    mpPhotoPreview.classList.add('has-img');
+    mpPhotoPreview.innerHTML = `<img src="${mpPendingImage}" alt="">`;
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('mpSaveBtn').onclick = () => {
+  const name = document.getElementById('mpName').value.trim();
+  const age = document.getElementById('mpAge').value.trim();
+  const bio = document.getElementById('mpBio').value.trim();
+
+  myProfile = { name, age, bio, image: mpPendingImage || '' };
+  saveMyProfileToStorage();
+  refreshBrandAvatar();
+  myProfileOverlay.classList.remove('show');
+};
+
+/* ---------------------------------------------
+   ⚙ 새 카드 등록 / ✎ 카드 편집·삭제
+---------------------------------------------- */
+const addOverlay = document.getElementById('addOverlay');
+const photoInput = document.getElementById('photoInput');
+const photoPreview = document.getElementById('photoPreview');
+const formTitle = document.getElementById('formTitle');
+const formSub = document.getElementById('formSub');
+const saveAddBtn = document.getElementById('saveAddBtn');
+const deleteAddBtn = document.getElementById('deleteAddBtn');
+let pendingImage = null;
+let editingIndex = null; // null = 새로 등록, 숫자 = profiles[editingIndex] 수정 중
+
+document.getElementById('btnAddProfile').onclick = () => {
+  editingIndex = null;
+  formTitle.textContent = '새 카드 등록 🎀';
+  formSub.textContent = '사진과 소개를 넣으면 스와이프 카드로 추가돼요';
+  saveAddBtn.textContent = '카드에 추가 ✨';
+  deleteAddBtn.style.display = 'none';
+  addOverlay.classList.add('show');
+};
+
+function openEditModal(profileIndex){
+  editingIndex = profileIndex;
+  const p = profiles[profileIndex];
+  formTitle.textContent = '카드 편집 ✎';
+  formSub.textContent = '내용을 고치거나 이 카드를 삭제할 수 있어요';
+  saveAddBtn.textContent = '변경사항 저장 💾';
+  deleteAddBtn.style.display = 'block';
+
+  pendingImage = p.image;
+  photoPreview.classList.add('has-img');
+  photoPreview.innerHTML = `<img src="${p.image}" alt="">`;
+  document.getElementById('fName').value = p.name || '';
+  document.getElementById('fAge').value = p.age || '';
+  document.getElementById('fSub').value = p.sub || '';
+  document.getElementById('fQuote').value = p.quote || '';
+
+  addOverlay.classList.add('show');
+}
+
+document.getElementById('cancelAddBtn').onclick = () => closeAddModal();
+document.getElementById('pickPhotoBtn').onclick = () => photoInput.click();
+
+photoInput.addEventListener('change', () => {
+  const file = photoInput.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingImage = e.target.result; // base64 data URL
+    photoPreview.classList.add('has-img');
+    photoPreview.innerHTML = `<img src="${pendingImage}" alt="">`;
+  };
+  reader.readAsDataURL(file);
+});
+
+saveAddBtn.onclick = () => {
+  const name = document.getElementById('fName').value.trim();
+  const age = document.getElementById('fAge').value.trim();
+  const sub = document.getElementById('fSub').value.trim();
+  const quote = document.getElementById('fQuote').value.trim();
+
+  if(!pendingImage){ alert('사진을 선택해 주세요 📷'); return; }
+  if(!name){ alert('이름을 입력해 주세요'); return; }
+
+  const profileData = { name, age: age || '', sub: sub || '', quote: quote || '', image: pendingImage };
+
+  if(editingIndex === null){
+    // 현재 보고 있는 카드 바로 다음 순서에 추가
+    profiles.splice(index, 0, profileData);
+  } else {
+    profiles[editingIndex] = profileData;
+  }
+  saveProfiles();
+  renderStack();
+  closeAddModal();
+};
+
+deleteAddBtn.onclick = () => {
+  if(editingIndex === null) return;
+  if(!confirm('이 카드를 정말 삭제할까요?')) return;
+  profiles.splice(editingIndex, 1);
+  if(editingIndex < index) index--; // 인덱스 보정
+  saveProfiles();
+  renderStack();
+  closeAddModal();
+};
+
+function closeAddModal(){
+  addOverlay.classList.remove('show');
+  pendingImage = null;
+  editingIndex = null;
+  photoPreview.classList.remove('has-img');
+  photoPreview.innerHTML = '📷';
+  document.getElementById('fName').value = '';
+  document.getElementById('fAge').value = '';
+  document.getElementById('fSub').value = '';
+  document.getElementById('fQuote').value = '';
+  photoInput.value = '';
+}
+</script>
+</body>
+</html>
